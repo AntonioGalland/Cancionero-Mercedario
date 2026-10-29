@@ -1,0 +1,23 @@
+{
+  "name": "Cancionero Mercedario Argentino",
+  "short_name": "Cancionero Mercedario",
+  "description": "Cancionero digital de la comunidad litúrgica y pastoral mercedaria de Argentina",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#881337",
+  "theme_color": "#881337",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "Escudo Mercedario.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "Escudo Mercedario.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+

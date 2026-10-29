@@ -1,0 +1,5 @@
+# Archivos pesados o innecesarios en la web
+cancionero-mercedario.pdf
+debug_*.txt
+*.py
+

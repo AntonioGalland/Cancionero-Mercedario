@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cancionero Mercedario Argentino</title>
+  <meta name="description" content="Cancionero digital de la comunidad litúrgica y pastoral mercedaria de Argentina. Basado en el cancionero de las Hermanas Mercedarias del Niño Jesús.">
+  <meta name="theme-color" content="#881337">
+  <link rel="icon" type="image/png" href="Escudo Mercedario.png">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tailwind CSS CDN con plugins -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            merced: {
+              50: '#fdf2f4',
+              100: '#fce7eb',
+              200: '#f9d2d9',
+              500: '#e11d48',
+              700: '#be123c',
+              800: '#9f1239',
+              900: '#881337',
+              950: '#4c0519'
+            },
+            gold: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            }
+          },
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Estilos personalizados */
+    .theme-sepia {
+      background-color: #fbf0d9 !important;
+      color: #433422 !important;
+    }
+    .theme-sepia .card-bg {
+      background-color: #f4e4c1 !important;
+      border-color: #e6cf9e !important;
+    }
+    .theme-sepia .header-bg {
+      background-color: #5c4033 !important;
+    }
+    .watermark-escudo {
+      background-image: url('Escudo Mercedario.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 320px;
+    }
+    /* Scrollbar estilizado */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(136, 19, 55, 0.3);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(136, 19, 55, 0.6);
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased min-h-full flex flex-col transition-colors duration-200">
+
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+  <header class="sticky top-0 z-40 bg-merced-900 text-white shadow-lg border-b border-merced-950/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        
+        <!-- Logo e Identidad -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="resetFiltros()">
+          <img src="Escudo Mercedario.png" alt="Escudo Mercedario" class="h-10 sm:h-12 w-auto object-contain drop-shadow hover:scale-105 transition-transform">
+          <div>
+            <h1 class="font-serif font-bold text-lg sm:text-2xl tracking-tight leading-tight text-white flex items-center gap-2">
+              Cancionero Mercedario
+              <span class="text-xs bg-gold-500 text-merced-950 font-sans font-bold px-2 py-0.5 rounded-full uppercase tracking-wider hidden sm:inline-block">Argentino</span>
+            </h1>
+            <p class="text-xs text-merced-200 hidden sm:block">Comunidad Litúrgica y Pastoral Mercedaria</p>
+          </div>
+        </div>
+
+        <!-- Acciones Rápidas del Navbar -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          
+          <!-- Botón Repertorio / Modo Misa -->
+          <button id="btn-repertorio-toggle" onclick="toggleRepertorioDrawer()" class="relative flex items-center space-x-1.5 bg-merced-800 hover:bg-merced-700 px-3 py-2 rounded-lg text-sm font-medium transition shadow-sm border border-merced-700">
+            <i data-lucide="list-music" class="w-4 h-4 text-gold-400"></i>
+            <span class="hidden md:inline">Repertorio Misa</span>
+            <span id="repertorio-badge" class="bg-gold-500 text-merced-950 text-xs font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center">0</span>
+          </button>
+
+          <!-- Galería Comunidades -->
+          <button onclick="abrirModalGaleria()" title="Presencia Mercedaria en Argentina" class="p-2 rounded-lg bg-merced-800/80 hover:bg-merced-700 text-merced-100 hover:text-white transition">
+            <i data-lucide="image" class="w-5 h-5"></i>
+          </button>
+
+          <!-- Acceso Administrador / Agregar Canción Nueva -->
+          <button id="btn-admin-canto" onclick="solicitarAccesoAdmin()" title="Acceso Administrador" class="flex items-center space-x-1 bg-merced-800/80 hover:bg-merced-700 text-gold-400 px-2.5 sm:px-3 py-2 rounded-lg text-sm font-semibold transition shadow-sm border border-merced-700">
+            <i id="icono-admin" data-lucide="lock" class="w-4 h-4"></i>
+            <span id="texto-admin" class="hidden sm:inline">Admin</span>
+          </button>
+
+          <!-- Selector de Modo (Claro / Oscuro / Sepia) -->
+          <button id="btn-tema" onclick="alternarTema()" title="Cambiar tema visual" class="p-2 rounded-lg bg-merced-800/80 hover:bg-merced-700 text-merced-100 hover:text-white transition">
+            <i id="icono-tema" data-lucide="moon" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION CON CARRUSEL DE IMÁGENES MERCEDARIAS -->
+  <section class="relative bg-gradient-to-b from-merced-900 via-merced-800 to-merced-950 text-white overflow-hidden py-8 sm:py-12 border-b border-merced-700">
+    <!-- Fondos de imágenes difuminadas -->
+    <div class="absolute inset-0 opacity-20 pointer-events-none overflow-hidden">
+      <div id="hero-slider" class="w-full h-full relative">
+        <img src="La Merced - Mendoza.jpeg" class="hero-bg-img absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-100" alt="Mendoza">
+        <img src="Virgen de la Merced - Tucuman.webp" class="hero-bg-img absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0" alt="Tucumán">
+        <img src="Procesión.jpeg" class="hero-bg-img absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0" alt="Procesión">
+        <img src="Virgen de la Merced - Corrientes.jpg" class="hero-bg-img absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0" alt="Corrientes">
+      </div>
+    </div>
+
+    <div class="relative max-w-5xl mx-auto px-4 text-center">
+      <div class="inline-flex items-center gap-2 bg-merced-950/60 border border-gold-500/40 px-3.5 py-1.5 rounded-full text-xs text-gold-300 mb-4 backdrop-blur-sm">
+        <i data-lucide="book-heart" class="w-3.5 h-3.5 text-gold-400"></i>
+        <span>Basado en el cancionero de las Hnas. Mercedarias del Niño Jesús</span>
+      </div>
+
+      <h2 class="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-stone-50 drop-shadow-sm mb-3">
+        Cantar es orar dos veces
+      </h2>
+      <p class="text-sm sm:text-lg text-merced-100 max-w-2xl mx-auto font-light leading-relaxed mb-6">
+        Más de <span id="hero-total-cantos" class="font-bold text-gold-400">530 cantos</span> organizados por momentos litúrgicos para enriquecer el culto, la catequesis y la alabanza de nuestras comunidades.
+      </p>
+
+      <!-- BARRA DE BÚSQUEDA PRINCIPAL -->
+      <div class="max-w-2xl mx-auto relative">
+        <div class="relative flex items-center">
+          <div class="absolute left-4 pointer-events-none text-merced-400">
+            <i data-lucide="search" class="w-5 h-5 text-merced-900"></i>
+          </div>
+          <input 
+            type="text" 
+            id="input-busqueda" 
+            placeholder="Buscar por código (ej: ENT-01), título o palabra de la letra..." 
+            class="w-full pl-12 pr-12 py-3.5 sm:py-4 rounded-xl text-stone-900 bg-white shadow-xl text-sm sm:text-base focus:outline-none focus:ring-4 focus:ring-gold-500/50 transition border border-stone-200"
+            autocomplete="off"
+            oninput="filtrarCanciones()"
+          >
+          <button 
+            id="btn-limpiar-busqueda" 
+            onclick="limpiarBusqueda()" 
+            class="absolute right-3 p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hidden"
+            title="Limpiar búsqueda"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <div class="flex items-center justify-between text-xs text-merced-200 mt-2 px-2">
+          <span>Tip: Busca por código como <strong class="text-gold-300">MER-01</strong>, <strong class="text-gold-300">ENT-15</strong> o frases de la letra</span>
+          <span id="contador-resultados" class="font-medium text-white">Mostrando todas</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN PRINCIPAL: FILTROS POR TIEMPO LITÚRGICO Y LISTADO -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+    <!-- FILTROS DE CATEGORÍAS LITÚRGICAS (CHIPS) -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+          <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+          Momentos Litúrgicos
+        </h3>
+        <button onclick="resetFiltros()" class="text-xs text-merced-700 hover:text-merced-900 font-semibold hover:underline">
+          Ver todas
+        </button>
+      </div>
+
+      <!-- Scroll horizontal de chips para móviles y envolvente para escritorio -->
+      <div id="contenedor-filtros" class="flex gap-2 overflow-x-auto pb-2 sm:flex-wrap scrollbar-none">
+        <!-- Generado dinámicamente en app.js -->
+      </div>
+    </div>
+
+    <!-- BANNER DE SECCIÓN SELECCIONADA -->
+    <div id="banner-seccion" class="hidden mb-6 p-4 rounded-xl bg-white border border-stone-200 shadow-sm flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div id="banner-seccion-icono" class="w-10 h-10 rounded-lg flex items-center justify-center text-white bg-merced-900 font-bold"></div>
+        <div>
+          <h4 id="banner-seccion-titulo" class="font-serif font-bold text-lg text-stone-900"></h4>
+          <p id="banner-seccion-desc" class="text-xs text-stone-500"></p>
+        </div>
+      </div>
+      <button onclick="resetFiltros()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1.5 rounded-lg font-medium transition">
+        Quitar filtro
+      </button>
+    </div>
+
+    <!-- GRILLA DE CANCIONES -->
+    <div id="grilla-canciones" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Canciones insertadas dinámicamente -->
+    </div>
+
+    <!-- MENSAJE SIN RESULTADOS -->
+    <div id="sin-resultados" class="hidden text-center py-16 px-4">
+      <div class="w-16 h-16 bg-merced-50 text-merced-800 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="search-x" class="w-8 h-8"></i>
+      </div>
+      <h3 class="font-serif text-xl font-bold text-stone-800 mb-2">No se encontraron cantos</h3>
+      <p class="text-sm text-stone-500 max-w-md mx-auto mb-6">
+        No hay coincidencias con tu búsqueda. Prueba buscar por otra palabra o agrega este canto si aún no está en el cancionero.
+      </p>
+      <div class="flex justify-center gap-3">
+        <button onclick="limpiarBusqueda()" class="px-4 py-2 bg-stone-200 hover:bg-stone-300 text-stone-700 text-sm font-medium rounded-lg transition">
+          Borrar filtros
+        </button>
+      </div>
+    </div>
+
+    <!-- BOTÓN DE SCROLL HACIA ARRIBA -->
+    <button 
+      id="btn-subir" 
+      onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+      class="fixed bottom-6 right-6 z-30 p-3 rounded-full bg-merced-900 text-white shadow-xl hover:bg-merced-800 transition-all opacity-0 pointer-events-none transform translate-y-4"
+      title="Volver arriba"
+    >
+      <i data-lucide="arrow-up" class="w-5 h-5"></i>
+    </button>
+
+  </main>
+
+  <!-- MODAL VISOR DE CANCIÓN (LETRA COMPLETA + MODO ATRIL) -->
+  <div id="modal-cancion" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-2 sm:p-4 transition-opacity">
+    <div class="relative bg-white dark:bg-stone-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-stone-200 dark:border-stone-800 watermark-escudo">
+      
+      <!-- Cabecera del Visor -->
+      <div class="p-4 sm:p-5 border-b border-stone-200 dark:border-stone-800 bg-stone-50/90 dark:bg-stone-900/90 backdrop-blur flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <span id="modal-codigo" class="text-xs font-bold px-2.5 py-1 rounded-md bg-merced-900 text-white tracking-wider"></span>
+          <span id="modal-seccion" class="text-xs font-medium text-stone-600 dark:text-stone-300 bg-stone-200 dark:bg-stone-800 px-2 py-0.5 rounded"></span>
+        </div>
+
+        <!-- Controles de Accesibilidad de Letra -->
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <button onclick="cambiarTamanoLetra(-2)" title="Reducir tamaño de letra" class="p-1.5 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 text-xs font-bold px-2">
+            A-
+          </button>
+          <button onclick="resetTamanoLetra()" title="Tamaño original" class="p-1.5 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 text-xs font-semibold">
+            100%
+          </button>
+          <button onclick="cambiarTamanoLetra(2)" title="Aumentar tamaño de letra" class="p-1.5 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 text-xs font-bold px-2">
+            A+
+          </button>
+          <div class="h-4 w-px bg-stone-300 dark:bg-stone-700 mx-1"></div>
+          <button onclick="copiarLetraActual()" title="Copiar letra" class="p-2 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+          </button>
+          <button onclick="cerrarModalCancion()" title="Cerrar" class="p-2 rounded-lg hover:bg-red-100 hover:text-red-700 text-stone-500 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Título de la Canción -->
+      <div class="px-6 pt-5 pb-2 bg-white/95 dark:bg-stone-900/95">
+        <h3 id="modal-titulo" class="font-serif text-2xl sm:text-3xl font-bold text-merced-950 dark:text-stone-100 leading-snug"></h3>
+      </div>
+
+      <!-- Cuerpo de la Letra con Scroll -->
+      <div class="px-6 py-4 overflow-y-auto flex-1 bg-white/80 dark:bg-stone-900/80 backdrop-blur-[2px]">
+        <div id="modal-letra" class="font-sans whitespace-pre-wrap leading-relaxed text-stone-800 dark:text-stone-200 text-base transition-all select-text">
+        </div>
+      </div>
+
+      <!-- Pie del Visor con Acciones -->
+      <div class="p-4 border-t border-stone-200 dark:border-stone-800 bg-stone-50/90 dark:bg-stone-900/90 flex items-center justify-between">
+        <button id="btn-modal-repertorio" onclick="toggleRepertorioActual()" class="flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-semibold transition border border-stone-300 dark:border-stone-700">
+          <i data-lucide="list-plus" class="w-4 h-4"></i>
+          <span>Agregar a Misa</span>
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <button id="btn-cancion-anterior" onclick="navegarCancionModal(-1)" class="p-2 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300" title="Canción anterior">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <span id="modal-posicion" class="text-xs text-stone-500 font-mono"></span>
+          <button id="btn-cancion-siguiente" onclick="navegarCancionModal(1)" class="p-2 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300" title="Canción siguiente">
+            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DRAWER LATERAL: MI REPERTORIO DE MISA DOMINICAL -->
+  <div id="drawer-repertorio" class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-white dark:bg-stone-900 shadow-2xl border-l border-stone-200 dark:border-stone-800 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-4 bg-merced-900 text-white flex items-center justify-between shadow">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="list-music" class="w-5 h-5 text-gold-400"></i>
+        <h3 class="font-serif font-bold text-lg">Repertorio de Misa</h3>
+      </div>
+      <button onclick="toggleRepertorioDrawer()" class="p-1 rounded hover:bg-merced-800 text-merced-200 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <div class="p-3 bg-stone-100 dark:bg-stone-800 text-xs text-stone-600 dark:text-stone-300 flex items-center justify-between">
+      <span>Cantos seleccionados para hoy</span>
+      <button onclick="vaciarRepertorio()" class="text-red-600 hover:text-red-700 font-medium">Vaciar todo</button>
+    </div>
+
+    <div id="lista-repertorio" class="flex-1 overflow-y-auto p-4 space-y-2">
+      <!-- Elementos seleccionados -->
+    </div>
+
+    <div class="p-4 border-t border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-950 space-y-2">
+      <button onclick="copiarRepertorioTexto()" class="w-full flex items-center justify-center gap-2 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 text-stone-800 dark:text-stone-200 py-2.5 rounded-xl text-sm font-semibold transition">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+        Copiar Programa para el Coro
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: CONTRASEÑA DE ADMINISTRADOR -->
+  <div id="modal-login-admin" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-stone-200 dark:border-stone-800">
+      <div class="p-4 bg-merced-900 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="shield-check" class="w-5 h-5 text-gold-400"></i>
+          <h3 class="font-serif font-bold text-base">Acceso Administrador</h3>
+        </div>
+        <button onclick="cerrarModalLoginAdmin()" class="p-1 rounded hover:bg-merced-800 text-merced-200 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-login-admin" onsubmit="validarPasswordAdmin(event)" class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Contraseña de Administrador</label>
+          <input type="password" id="input-admin-pass" placeholder="Ingresa la contraseña" required class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-gold-500 outline-none">
+          <p id="error-admin-pass" class="text-xs text-red-500 font-medium mt-1 hidden">Contraseña incorrecta.</p>
+        </div>
+
+        <div class="flex gap-2 pt-1">
+          <button type="button" onclick="cerrarModalLoginAdmin()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-300">
+            Cancelar
+          </button>
+          <button type="submit" class="flex-1 bg-gold-600 hover:bg-gold-500 text-merced-950 font-bold py-2 rounded-xl text-xs transition shadow">
+            Ingresar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR NUEVA CANCIÓN -->
+  <div id="modal-nueva-cancion" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden border border-stone-200 dark:border-stone-800">
+      
+      <div class="p-4 bg-merced-900 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="file-plus" class="w-5 h-5 text-gold-400"></i>
+          <h3 class="font-serif font-bold text-lg">Agregar Canto al Cancionero</h3>
+        </div>
+        <button onclick="cerrarModalNuevaCancion()" class="p-1 rounded hover:bg-merced-800 text-merced-200 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-nueva-cancion" onsubmit="guardarNuevaCancion(event)" class="p-5 overflow-y-auto flex-1 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Momento Litúrgico / Sección *</label>
+          <select id="nueva-seccion" class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100" required onchange="actualizarCodigoSugerido()">
+            <!-- Opciones generadas dinámicamente -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Código asignado</label>
+          <input type="text" id="nuevo-codigo" readonly class="w-full p-2.5 bg-stone-100 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 rounded-lg text-sm font-mono font-bold text-merced-900 dark:text-gold-400">
+          <p class="text-[11px] text-stone-400 mt-0.5">Se asigna automáticamente el siguiente número correlativo en esa sección.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Título del Canto *</label>
+          <input type="text" id="nuevo-titulo" placeholder="Ej: Jesús, Pan de Vida" required class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Letra Completa *</label>
+          <textarea id="nueva-letra" rows="8" placeholder="Escribe o pega aquí la letra del canto..." required class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm font-sans bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"></textarea>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full bg-gold-600 hover:bg-gold-500 text-merced-950 font-bold py-3 rounded-xl transition shadow flex items-center justify-center gap-2">
+            <i data-lucide="check" class="w-5 h-5"></i>
+            Guardar Canto
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- MODAL: GALERÍA DE PRESENCIA MERCEDARIA EN ARGENTINA -->
+  <div id="modal-galeria" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-stone-900 text-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-stone-700">
+      <div class="p-4 border-b border-stone-800 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <img src="Escudo Mercedario.png" class="h-8 w-auto">
+          <div>
+            <h3 class="font-serif font-bold text-lg text-stone-100">Presencia Mercedaria en Argentina</h3>
+            <p class="text-xs text-stone-400">Templos, vitrales y comunidades que dan vida a este cancionero</p>
+          </div>
+        </div>
+        <button onclick="cerrarModalGaleria()" class="p-2 rounded-lg hover:bg-stone-800 text-stone-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        
+        <div class="group relative rounded-xl overflow-hidden bg-stone-800 border border-stone-700">
+          <img src="La Merced - Mendoza.jpeg" alt="Basílica de la Merced Mendoza" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-3 bg-stone-900">
+            <h5 class="font-semibold text-sm text-gold-400">Basílica de La Merced</h5>
+            <p class="text-xs text-stone-400">Mendoza</p>
+          </div>
+        </div>
+
+        <div class="group relative rounded-xl overflow-hidden bg-stone-800 border border-stone-700">
+          <img src="Virgen de la Merced - Tucuman.webp" alt="Virgen de la Merced Tucumán" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-3 bg-stone-900">
+            <h5 class="font-semibold text-sm text-gold-400">Ntra. Señora de la Merced</h5>
+            <p class="text-xs text-stone-400">Generala del Ejército - Tucumán</p>
+          </div>
+        </div>
+
+        <div class="group relative rounded-xl overflow-hidden bg-stone-800 border border-stone-700">
+          <img src="Virgen de la Merced - Corrientes.jpg" alt="Virgen de la Merced Corrientes" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-3 bg-stone-900">
+            <h5 class="font-semibold text-sm text-gold-400">Santuario de La Merced</h5>
+            <p class="text-xs text-stone-400">Corrientes</p>
+          </div>
+        </div>
+
+        <div class="group relative rounded-xl overflow-hidden bg-stone-800 border border-stone-700">
+          <img src="Procesión.jpeg" alt="Procesión Mercedaria" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-3 bg-stone-900">
+            <h5 class="font-semibold text-sm text-gold-400">Procesión Mercedaria</h5>
+            <p class="text-xs text-stone-400">Comunidad de Fieles en Marcha</p>
+          </div>
+        </div>
+
+        <div class="group relative rounded-xl overflow-hidden bg-stone-800 border border-stone-700">
+          <img src="Virgen de la Merced - Vitral.jpeg" alt="Vitral Mercedario" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-3 bg-stone-900">
+            <h5 class="font-semibold text-sm text-gold-400">Vitral Tradicional</h5>
+            <p class="text-xs text-stone-400">María de la Merced</p>
+          </div>
+        </div>
+
+        <div class="group relative rounded-xl overflow-hidden bg-stone-800 border border-stone-700">
+          <img src="Virgen_de_la_Merced imagenes y vitral Parroquia San Pedro Nolasco Tucuman.jpg" alt="San Pedro Nolasco Tucumán" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-3 bg-stone-900">
+            <h5 class="font-semibold text-sm text-gold-400">Parroquia San Pedro Nolasco</h5>
+            <p class="text-xs text-stone-400">Tucumán</p>
+          </div>
+        </div>
+
+        <div class="group relative rounded-xl overflow-hidden bg-stone-800 border border-stone-700">
+          <img src="Virgen_de_la_Merced imagenes y vitral Parroquia de Palmares.jpg" alt="Parroquia Palmares" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="p-3 bg-stone-900">
+            <h5 class="font-semibold text-sm text-gold-400">Parroquia de Palmares</h5>
+            <p class="text-xs text-stone-400">Comunidad y Vitrales</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- PIE DE PÁGINA INSTITUCIONAL -->
+  <footer class="bg-merced-950 text-stone-300 border-t border-merced-900 mt-auto py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+        
+        <!-- Identidad y Escudo -->
+        <div class="flex items-center space-x-4">
+          <img src="Escudo Mercedario.png" alt="Escudo de la Orden de la Merced" class="h-16 w-auto object-contain">
+          <div>
+            <h4 class="font-serif font-bold text-white text-lg">Cancionero Mercedario Argentino</h4>
+            <p class="text-xs text-merced-200 mt-1">Una sola voz al servicio de la alabanza y la libertad redentora.</p>
+          </div>
+        </div>
+
+        <!-- Agradecimiento Institucional Específico -->
+        <div class="text-center md:text-left bg-merced-900/50 p-4 rounded-xl border border-merced-800/80">
+          <div class="flex items-center gap-2 justify-center md:justify-start text-gold-400 text-xs font-bold uppercase tracking-wider mb-1">
+            <i data-lucide="heart" class="w-3.5 h-3.5 text-gold-400"></i>
+            Agradecimiento Especial
+          </div>
+          <p class="text-xs text-stone-300 leading-relaxed">
+            Este cancionero digital se confeccionó gracias al cancionero en PDF compilado y cuidado con amor pastoral por las 
+            <strong class="text-white">Hermanas Mercedarias del Niño Jesús</strong>. A ellas y a todas las comunidades mercedarias de Argentina, nuestro profundo reconocimiento y gratitud.
+          </p>
+        </div>
+
+        <!-- Propósito Pastoral y Créditos -->
+        <div class="text-xs text-stone-400 space-y-2 text-center md:text-right">
+          <p class="font-medium text-stone-200">Uso Pastoral y Comunitario sin Fines de Lucro</p>
+          <p class="text-[11px] leading-normal text-stone-400">
+            Las letras y composiciones pertenecen a sus respectivos autores. Este sitio tiene como único fin facilitar la participación de la asamblea en el culto y la oración comunitaria.
+          </p>
+          <p class="text-[11px] text-merced-300">
+            Orden de la Merced · Familia Mercedaria Argentina
+          </p>
+        </div>
+
+      </div>
+
+      <div class="border-t border-merced-900/80 mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500">
+        <p>&copy; Cancionero Mercedario Argentino. Obra abierta a la comunidad.</p>
+        <p class="mt-2 sm:mt-0">Diseñado con devoción para la Iglesia en salida.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CARGA DE DATOS Y LÓGICA -->
+  <!-- 1. Carga sincrónica garantizada (funciona tanto con file:// como en servidor web) -->
+  <script src="canciones_data.js"></script>
+  <!-- 2. Lógica interactiva de la aplicación -->
+  <script src="app.js"></script>
+
+  <!-- 3. Registro de Service Worker para PWA / Modo Offline -->
+  <script>
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado:', reg.scope))
+          .catch(err => console.log('Error registro SW:', err));
+      });
+    }
+  </script>
+
+</body>
+</html>
