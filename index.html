@@ -369,7 +369,12 @@
       <form id="form-login-admin" onsubmit="validarPasswordAdmin(event)" class="p-5 space-y-4">
         <div>
           <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Contraseña de Administrador</label>
-          <input type="password" id="input-admin-pass" placeholder="Ingresa la contraseña" required class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-gold-500 outline-none">
+          <div class="relative">
+            <input type="password" id="input-admin-pass" placeholder="Ingresa la contraseña" required class="w-full p-2.5 pr-10 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-gold-500 outline-none">
+            <button type="button" onclick="toggleVerPasswordAdmin()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200" title="Ver contraseña">
+              <i id="icono-ojo-admin" data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
           <p id="error-admin-pass" class="text-xs text-red-500 font-medium mt-1 hidden">Contraseña incorrecta.</p>
         </div>
 

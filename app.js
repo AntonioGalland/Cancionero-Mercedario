@@ -526,11 +526,25 @@ function cerrarModalLoginAdmin() {
   if (modal) modal.classList.add('hidden');
 }
 
+function toggleVerPasswordAdmin() {
+  const input = document.getElementById('input-admin-pass');
+  const icono = document.getElementById('icono-ojo-admin');
+  if (!input || !icono) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    icono.setAttribute('data-lucide', 'eye-off');
+  } else {
+    input.type = 'password';
+    icono.setAttribute('data-lucide', 'eye');
+  }
+  lucide.createIcons();
+}
+
 function validarPasswordAdmin(e) {
   e.preventDefault();
   const input = document.getElementById('input-admin-pass');
   const error = document.getElementById('error-admin-pass');
-  const pass = input ? input.value : '';
+  const pass = input ? input.value.trim() : '';
 
   if (pass === ADMIN_PASSWORD_HASH) {
     esAdminAutenticado = true;
