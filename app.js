@@ -485,20 +485,17 @@ let esAdminAutenticado = sessionStorage.getItem('admin_cancionero_autenticado') 
 function actualizarBotonAdminUI() {
   const btn = document.getElementById('btn-admin-canto');
   const icono = document.getElementById('icono-admin');
-  const texto = document.getElementById('texto-admin');
 
-  if (!btn || !icono || !texto) return;
+  if (!btn || !icono) return;
 
   if (esAdminAutenticado) {
-    btn.className = 'flex items-center space-x-1 bg-gold-600 hover:bg-gold-500 text-merced-950 px-2.5 sm:px-3 py-2 rounded-lg text-sm font-bold transition shadow-sm';
-    btn.title = 'Agregar nuevo canto (Sesión Admin Activa)';
-    icono.setAttribute('data-lucide', 'plus-circle');
-    texto.textContent = 'Nuevo Canto';
+    btn.className = 'p-2 rounded-lg bg-gold-600 hover:bg-gold-500 text-merced-950 transition shadow-sm';
+    btn.title = 'Sesión Admin Activa: Cargar nuevo canto';
+    icono.setAttribute('data-lucide', 'unlock');
   } else {
-    btn.className = 'flex items-center space-x-1 bg-merced-800/80 hover:bg-merced-700 text-gold-400 px-2.5 sm:px-3 py-2 rounded-lg text-sm font-semibold transition shadow-sm border border-merced-700';
+    btn.className = 'p-2 rounded-lg bg-merced-800/80 hover:bg-merced-700 text-gold-400 hover:text-white transition border border-merced-700';
     btn.title = 'Acceso Administrador';
     icono.setAttribute('data-lucide', 'lock');
-    texto.textContent = 'Admin';
   }
   lucide.createIcons();
 }
@@ -703,6 +700,127 @@ function mostrarToast(mensaje) {
   }, 2800);
 }
 
+// Modal Índice General y Momentos Litúrgicos
+function abrirModalIndice() {
+  document.getElementById('modal-indice')?.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+  const inputFiltro = document.getElementById('input-filtro-indice');
+  if (inputFiltro) inputFiltro.value = '';
+  renderizarCuerpoIndiceGeneral();
+  setTimeout(() => inputFiltro?.focus(), 100);
+}
+
+function cerrarModalIndice() {
+  document.getElementById('modal-indice')?.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+}
+
+function renderizarCuerpoIndiceGeneral(filtro = '') {
+  const cont = document.getElementById('cuerpo-indice-general');
+  if (!cont) return;
+
+  const termino = filtro.trim().toLowerCase();
+  let html = '';
+
+  secciones.forEach(sec => {
+    // Filtrar cantos de esta sección
+    let cantosSec = todasLasCanciones.filter(c => c.seccion_codigo === sec.codigo);
+    
+    if (termino) {
+      cantosSec = cantosSec.filter(c => 
+        c.codigo.toLowerCase().includes(termino) ||
+        c.titulo.toLowerCase().includes(termino) ||
+        sec.nombre.toLowerCase().includes(termino)
+      );
+    }
+
+    if (termino && cantosSec.length === 0) {
+      return; // Ocultar sección si no coincide
+    }
+
+    const esMercedaria = sec.codigo === 'MER';
+    const abiertaPorDefecto = termino.length > 0;
+
+    html += `
+      <details class="group py-2.5" ${abiertaPorDefecto ? 'open' : ''}>
+        <summary class="flex items-center justify-between cursor-pointer list-none select-none p-2.5 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 transition">
+          <div class="flex items-center space-x-3">
+            <span class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold font-mono ${esMercedaria ? 'bg-merced-900 text-gold-400 ring-2 ring-gold-400' : 'bg-stone-200 dark:bg-stone-800 text-stone-800 dark:text-stone-200'}">
+              ${sec.codigo}
+            </span>
+            <span class="font-serif font-bold text-base text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              ${sec.nombre}
+              ${esMercedaria ? '<span class="text-xs bg-gold-500 text-merced-950 font-sans font-bold px-1.5 py-0.2 rounded">Especial</span>' : ''}
+            </span>
+          </div>
+          <div class="flex items-center space-x-2 text-xs text-stone-500 dark:text-stone-400">
+            <span class="font-medium">${cantosSec.length} cantos</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-open:rotate-180"></i>
+          </div>
+        </summary>
+
+        <div class="mt-2 pl-4 sm:pl-11 pr-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+          ${cantosSec.map(c => `
+            <div 
+              onclick="irDesdeIndiceACancion('${c.codigo}')" 
+              class="flex items-center space-x-2 p-2 rounded-lg hover:bg-merced-50 dark:hover:bg-stone-800/80 cursor-pointer group/item transition border border-transparent hover:border-gold-500/30"
+            >
+              <span class="text-xs font-mono font-bold text-merced-900 dark:text-gold-400 min-w-[55px]">${c.codigo}</span>
+              <span class="text-xs font-medium text-stone-800 dark:text-stone-200 group-hover/item:text-merced-900 dark:group-hover/item:text-gold-300 truncate">${c.titulo}</span>
+            </div>
+          `).join('')}
+        </div>
+      </details>
+    `;
+  });
+
+  if (!html) {
+    html = `
+      <div class="text-center py-8 text-stone-400">
+        <i data-lucide="search-x" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+        <p class="text-sm">No se encontraron cantos ni secciones con "${filtro}".</p>
+      </div>
+    `;
+  }
+
+  cont.innerHTML = html;
+  lucide.createIcons();
+}
+
+function filtrarIndiceGeneral() {
+  const val = document.getElementById('input-filtro-indice')?.value || '';
+  renderizarCuerpoIndiceGeneral(val);
+}
+
+function expandirColapsarIndice(expandir) {
+  const detalles = document.querySelectorAll('#cuerpo-indice-general details');
+  detalles.forEach(d => {
+    if (expandir) d.setAttribute('open', '');
+    else d.removeAttribute('open');
+  });
+}
+
+function irDesdeIndiceACancion(codigo) {
+  cerrarModalIndice();
+  abrirModalCancion(codigo);
+}
+
+// Integración de Sugerencias con Google Forms
+// Enlace base del formulario de Google (puedes cambiarlo aquí por el enlace de tu Google Form)
+const GOOGLE_FORM_URL = 'https://docs.google.com/forms';
+
+function abrirSugerirCanto() {
+  // Abre el formulario para sugerir canto nuevo
+  window.open(GOOGLE_FORM_URL, '_blank');
+}
+
+function sugerirCorreccionCancionActual() {
+  if (!cancionActualModal) return;
+  // Abre el formulario informando qué canción se desea corregir
+  const mensaje = `Hola! Deseo proponer una corrección para el canto: [${cancionActualModal.codigo}] ${cancionActualModal.titulo} (${cancionActualModal.seccion})`;
+  window.open(`${GOOGLE_FORM_URL}?usp=pp_url&entry_canto=${encodeURIComponent(mensaje)}`, '_blank');
+}
+
 // Eventos de teclado y scroll
 function inicializarEventos() {
   // Tecla / para buscar, Esc para cerrar modales
@@ -716,6 +834,7 @@ function inicializarEventos() {
       cerrarModalNuevaCancion();
       cerrarModalLoginAdmin();
       cerrarModalGaleria();
+      cerrarModalIndice();
       const drawer = document.getElementById('drawer-repertorio');
       if (drawer && !drawer.classList.contains('translate-x-full')) {
         drawer.classList.add('translate-x-full');
