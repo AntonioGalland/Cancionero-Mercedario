@@ -838,21 +838,21 @@ function enviarSugerenciaComunidad(e) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(nuevaSugerencia)
   })
-  .then(() => {
-    cerrarModalSugerir();
-    mostrarToast('🎵 ¡Muchas gracias! Tu sugerencia fue enviada al Administrador.');
-  })
-  .catch(() => {
-    // Aunque falle la red, la copia local ya fue guardada
-    cerrarModalSugerir();
-    mostrarToast('🎵 Sugerencia guardada. Se enviará cuando haya conexión.');
-  })
-  .finally(() => {
-    if (btnEnviar) {
-      btnEnviar.disabled = false;
-      btnEnviar.textContent = 'Enviar Propuesta';
-    }
-  });
+    .then(() => {
+      cerrarModalSugerir();
+      mostrarToast('🎵 ¡Muchas gracias! Tu sugerencia fue enviada al Administrador.');
+    })
+    .catch(() => {
+      // Aunque falle la red, la copia local ya fue guardada
+      cerrarModalSugerir();
+      mostrarToast('🎵 Sugerencia guardada. Se enviará cuando haya conexión.');
+    })
+    .finally(() => {
+      if (btnEnviar) {
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = 'Enviar Propuesta';
+      }
+    });
 }
 
 // Eventos de teclado y scroll

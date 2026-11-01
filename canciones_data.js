@@ -1268,7 +1268,17 @@ window.CANCIONERO_DATA = {
       "titulo_original": "SHEMÁ",
       "seccion": "Salmos",
       "seccion_codigo": "SAL",
-      "letra": "Shemá Israel, /shemá Israel,\n/shemá Israel,/ adonai Elohénu,\n/adonái Ejaád.\n\nEscucha,Israel, /escucha, Israel,\n/escucha, Israel,/ el Señor es tu\nDios, /el Señor es uno.\n\nAmarás al Señor, tu Dios,/con\ntodo el corazón, /con toda tu\nmente y tus fuerzas, /tú lo\namarás, /tú lo amarás/y a tu\nprójimo /como a ti mismo.\n\nOFERTORIO"
+      "letra": "Shemá Israel, /shemá Israel,\n/shemá Israel,/ adonai Elohénu,\n/adonái Ejaád.\n\nEscucha,Israel, /escucha, Israel,\n/escucha, Israel,/ el Señor es tu\nDios, /el Señor es uno.\n\nAmarás al Señor, tu Dios,/con\ntodo el corazón, /con toda tu\nmente y tus fuerzas, /tú lo\namarás, /tú lo amarás/y a tu\nprójimo /como a ti mismo."
+    },
+    {
+      "id": "sal-27-shem",
+      "codigo": "SAL-27",
+      "numero_seccion": 27,
+      "titulo": "Salmo 139 - Señor, Tú me conoces",
+      "titulo_original": "Salmo 139 - Señor, Tú me conoces",
+      "seccion": "Salmos",
+      "seccion_codigo": "SAL",
+      "letra": "Señor, Tú me conoces, \nentiendes desde lejos mi pensar, \nadviertes mi andar y mi reposo, \nconoces todos mis caminos. \n\nPues aún no está la palabra en mi voz \ny Tú la sabes. \nDelante y detrás tú me rodeaste, \npusiste sobre mí tu amor, \nGrande eres, y no lo puedo comprender. \n\n¿A dónde me iré de tu Espíritu, \na dónde huiré de tu presencia? \n\nPorque si fuera a los cielos te hallaré \ny si tomara las alas del alba te encontraré \naunque habitara en el extremo del mar \ntu mano me guiará, conmigo estarás. \ntu mano me guiará, conmigo estarás."
     },
     {
       "id": "ofe-01-a-buen-tiempo",
