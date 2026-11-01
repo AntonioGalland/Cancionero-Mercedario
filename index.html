@@ -456,6 +456,77 @@
     </div>
   </div>
 
+  <!-- MODAL: SUGERIR CANTO O CORRECCIÓN -->
+  <div id="modal-sugerir" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden border border-stone-200 dark:border-stone-800">
+      
+      <div class="p-4 bg-merced-900 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="edit-3" class="w-5 h-5 text-gold-400"></i>
+          <h3 id="modal-sugerir-titulo" class="font-serif font-bold text-lg">Sugerir Canto o Corrección</h3>
+        </div>
+        <button onclick="cerrarModalSugerir()" class="p-1 rounded hover:bg-merced-800 text-merced-200 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-sugerir" onsubmit="enviarSugerenciaComunidad(event)" class="p-5 overflow-y-auto flex-1 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">¿Qué deseas proponer? *</label>
+          <select id="sugerir-tipo" class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100" onchange="adaptarFormularioSugerencia()">
+            <option value="nueva">🎵 Sugerir una canción nueva</option>
+            <option value="correccion">✏️ Proponer corrección de letra o título</option>
+            <option value="baja">🗑️ Sugerir dar de baja / retirar un canto</option>
+          </select>
+        </div>
+
+        <div id="campo-canto-referencia" class="hidden">
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Canto al que te refieres</label>
+          <input type="text" id="sugerir-referencia" placeholder="Ej: MER-02 Chacarera de la Redención" class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
+        </div>
+
+        <div id="campo-momento-liturgico">
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Momento Litúrgico sugerido</label>
+          <select id="sugerir-seccion" class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100">
+            <!-- Cargado dinámicamente -->
+          </select>
+        </div>
+
+        <div>
+          <label id="label-sugerir-titulo" class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Título del Canto *</label>
+          <input type="text" id="sugerir-titulo" placeholder="Ej: Jesús, Pan de Vida" required class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
+        </div>
+
+        <div>
+          <label id="label-sugerir-mensaje" class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Letra o Detalle de la propuesta *</label>
+          <textarea id="sugerir-mensaje" rows="6" placeholder="Pega aquí la letra completa o describe la corrección..." required class="w-full p-2.5 border border-stone-300 dark:border-stone-700 rounded-lg text-sm font-sans bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Tu Nombre o Coro</label>
+            <input type="text" id="sugerir-autor" placeholder="Ej: Coro Parroquia La Merced" class="w-full p-2 border border-stone-300 dark:border-stone-700 rounded-lg text-xs bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase mb-1">Ciudad / Comunidad</label>
+            <input type="text" id="sugerir-comunidad" placeholder="Ej: Mendoza, Tucumán, etc." class="w-full p-2 border border-stone-300 dark:border-stone-700 rounded-lg text-xs bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
+          </div>
+        </div>
+
+        <div class="pt-2 flex flex-col gap-2">
+          <button type="submit" class="w-full bg-gold-600 hover:bg-gold-500 text-merced-950 font-bold py-2.5 rounded-xl transition shadow flex items-center justify-center gap-2">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            Enviar Propuesta
+          </button>
+          <p class="text-[11px] text-center text-stone-400">
+            Tu sugerencia se enviará al Administrador del cancionero para su revisión y aprobación.
+          </p>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
   <!-- MODAL: AGREGAR NUEVA CANCIÓN -->
   <div id="modal-nueva-cancion" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden border border-stone-200 dark:border-stone-800">

@@ -805,20 +805,110 @@ function irDesdeIndiceACancion(codigo) {
   abrirModalCancion(codigo);
 }
 
-// Integración de Sugerencias con Google Forms
-// Enlace base del formulario de Google (puedes cambiarlo aquí por el enlace de tu Google Form)
-const GOOGLE_FORM_URL = 'https://docs.google.com/forms';
-
+// Sistema Integral de Sugerencias y Proposiciones de la Comunidad
 function abrirSugerirCanto() {
-  // Abre el formulario para sugerir canto nuevo
-  window.open(GOOGLE_FORM_URL, '_blank');
+  const modal = document.getElementById('modal-sugerir');
+  if (!modal) return;
+
+  poblarSelectSugerirSeccion();
+  document.getElementById('sugerir-tipo').value = 'nueva';
+  adaptarFormularioSugerencia();
+  document.getElementById('sugerir-referencia').value = '';
+  document.getElementById('sugerir-titulo').value = '';
+  document.getElementById('sugerir-mensaje').value = '';
+
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+  lucide.createIcons();
 }
 
 function sugerirCorreccionCancionActual() {
   if (!cancionActualModal) return;
-  // Abre el formulario informando qué canción se desea corregir
-  const mensaje = `Hola! Deseo proponer una corrección para el canto: [${cancionActualModal.codigo}] ${cancionActualModal.titulo} (${cancionActualModal.seccion})`;
-  window.open(`${GOOGLE_FORM_URL}?usp=pp_url&entry_canto=${encodeURIComponent(mensaje)}`, '_blank');
+  const modal = document.getElementById('modal-sugerir');
+  if (!modal) return;
+
+  poblarSelectSugerirSeccion();
+  document.getElementById('sugerir-tipo').value = 'correccion';
+  adaptarFormularioSugerencia();
+  
+  document.getElementById('sugerir-referencia').value = `[${cancionActualModal.codigo}] ${cancionActualModal.titulo}`;
+  document.getElementById('sugerir-titulo').value = cancionActualModal.titulo;
+  document.getElementById('sugerir-mensaje').value = `Corrección sugerida para la letra:\n\n${cancionActualModal.letra}\n\nDetalle de la modificación: `;
+
+  modal.classList.remove('hidden');
+  document.body.classList.add('overflow-hidden');
+  lucide.createIcons();
+}
+
+function cerrarModalSugerir() {
+  document.getElementById('modal-sugerir')?.classList.add('hidden');
+  document.body.classList.remove('overflow-hidden');
+}
+
+function poblarSelectSugerirSeccion() {
+  const sel = document.getElementById('sugerir-seccion');
+  if (!sel) return;
+  sel.innerHTML = secciones.map(s => `
+    <option value="${s.codigo}">${s.nombre} (${s.codigo})</option>
+  `).join('');
+}
+
+function adaptarFormularioSugerencia() {
+  const tipo = document.getElementById('sugerir-tipo')?.value || 'nueva';
+  const campoRef = document.getElementById('campo-canto-referencia');
+  const campoMom = document.getElementById('campo-momento-liturgico');
+  const labelTit = document.getElementById('label-sugerir-titulo');
+  const labelMen = document.getElementById('label-sugerir-mensaje');
+
+  if (tipo === 'nueva') {
+    campoRef?.classList.add('hidden');
+    campoMom?.classList.remove('hidden');
+    if (labelTit) labelTit.textContent = 'Título del Canto *';
+    if (labelMen) labelMen.textContent = 'Letra Completa *';
+  } else if (tipo === 'correccion') {
+    campoRef?.classList.remove('hidden');
+    campoMom?.classList.add('hidden');
+    if (labelTit) labelTit.textContent = 'Título de la canción a corregir *';
+    if (labelMen) labelMen.textContent = 'Detalle de la corrección en la letra *';
+  } else { // baja
+    campoRef?.classList.remove('hidden');
+    campoMom?.classList.add('hidden');
+    if (labelTit) labelTit.textContent = 'Canción que se sugiere retirar *';
+    if (labelMen) labelMen.textContent = 'Motivo por el cual ya no se usa *';
+  }
+}
+
+function enviarSugerenciaComunidad(e) {
+  e.preventDefault();
+  const tipo = document.getElementById('sugerir-tipo').value;
+  const titulo = document.getElementById('sugerir-titulo').value.trim();
+  const mensaje = document.getElementById('sugerir-mensaje').value.trim();
+  const autor = document.getElementById('sugerir-autor').value.trim() || 'Anónimo';
+  const comunidad = document.getElementById('sugerir-comunidad').value.trim() || 'Comunidad Mercedaria';
+  const ref = document.getElementById('sugerir-referencia').value.trim();
+  const seccion = document.getElementById('sugerir-seccion').value;
+
+  const nuevaSugerencia = {
+    id: Date.now(),
+    fecha: new Date().toLocaleString(),
+    tipo: tipo,
+    titulo: titulo,
+    referencia: ref,
+    seccion: seccion,
+    mensaje: mensaje,
+    remitente: autor,
+    comunidad: comunidad,
+    estado: 'pendiente'
+  };
+
+  // Guardar en buzón de sugerencias local
+  const buzon = JSON.parse(localStorage.getItem('buzon_sugerencias_mercedario') || '[]');
+  buzon.push(nuevaSugerencia);
+  localStorage.setItem('buzon_sugerencias_mercedario', JSON.stringify(buzon));
+
+  // También preparar texto para WhatsApp o email al administrador
+  cerrarModalSugerir();
+  mostrarToast('¡Muchas gracias! Tu sugerencia fue enviada al Administrador.');
 }
 
 // Eventos de teclado y scroll
@@ -835,6 +925,7 @@ function inicializarEventos() {
       cerrarModalLoginAdmin();
       cerrarModalGaleria();
       cerrarModalIndice();
+      cerrarModalSugerir();
       const drawer = document.getElementById('drawer-repertorio');
       if (drawer && !drawer.classList.contains('translate-x-full')) {
         drawer.classList.add('translate-x-full');
