@@ -478,7 +478,7 @@ function cargarRepertorioLocal() {
 }
 
 // Configuración de Envío de Sugerencias (Google Apps Script Webhook)
-const GOOGLE_SCRIPT_SUGERENCIAS_URL = 'https://script.google.com/macros/s/AKfycbx9H8YJftIfxtugcHONYMRnoUoV3-EFFB3yp5P-cnko6rpDQqOVeyXDEimXkDffbx_5/exec';
+const GOOGLE_SCRIPT_SUGERENCIAS_URL = 'https://script.google.com/macros/s/AKfycbw_xudU-FvI59ZcGGfgAFSro2M53rkZZcefoY0bEvehy5hiKsfp72DYieZb2lHgE-Ll/exec';
 
 // Modal Agregar Nueva Canción
 function abrirModalNuevaCancion() {
