@@ -105,3 +105,4 @@ Permite buscar por:
 1. Incorporación progresiva de acordes para guitarra (cifrado) en canciones litúrgicas clave.
 2. Inclusión de enlaces a audios oficiales en YouTube o Spotify para coros juveniles.
 3. Posibilidad de descargar el programa de misa en formato PDF listo para imprimir.
+
