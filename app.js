@@ -46,7 +46,7 @@ function inicializarDatos() {
   if (window.CANCIONERO_DATA) {
     secciones = window.CANCIONERO_DATA.secciones || [];
     const baseCanciones = window.CANCIONERO_DATA.canciones || [];
-    
+
     // Unir con canciones agregadas por el usuario en localStorage
     const cancionesLocales = JSON.parse(localStorage.getItem('canciones_nuevas_mercedarias') || '[]');
     todasLasCanciones = [...baseCanciones, ...cancionesLocales];
@@ -55,7 +55,7 @@ function inicializarDatos() {
   }
 
   cancionesFiltradas = [...todasLasCanciones];
-  
+
   const elTotal = document.getElementById('hero-total-cantos');
   if (elTotal) elTotal.textContent = todasLasCanciones.length + ' cantos';
 
@@ -82,7 +82,7 @@ function renderizarFiltrosSecciones() {
     const cantosCount = todasLasCanciones.filter(c => c.seccion_codigo === sec.codigo).length;
     const esActivo = seccionActiva === sec.codigo;
     const esMercedaria = sec.codigo === 'MER';
-    
+
     let estiloExtra = esMercedaria ? 'border-gold-500/80 font-bold' : 'border-stone-200';
     if (esActivo) {
       estiloExtra = 'bg-merced-900 text-white shadow-md ring-2 ring-gold-400 font-bold';
@@ -209,7 +209,7 @@ function renderizarCanciones(esCargaMas = false) {
   let html = itemsAMostrar.map((cancion, idx) => {
     const estiloSeccion = COLORES_SECCION[cancion.seccion_codigo] || { light: 'bg-stone-100 text-stone-800' };
     const enRepertorio = repertorioMisa.some(r => r.codigo === cancion.codigo);
-    
+
     // Obtener las primeras 2 líneas de la letra para previsualización
     const lineas = cancion.letra.split('\n').filter(l => l.trim().length > 0).slice(0, 2);
     const extracto = lineas.join(' / ').substring(0, 95) + (cancion.letra.length > 95 ? '...' : '');
@@ -295,7 +295,7 @@ function abrirModalCancion(codigo) {
   document.getElementById('modal-codigo').textContent = cancion.codigo;
   document.getElementById('modal-seccion').textContent = cancion.seccion;
   document.getElementById('modal-titulo').textContent = cancion.titulo;
-  
+
   const elLetra = document.getElementById('modal-letra');
   elLetra.textContent = cancion.letra;
   elLetra.style.fontSize = `${tamanoLetraActual}px`;
@@ -478,95 +478,17 @@ function cargarRepertorioLocal() {
   }
 }
 
-// Modal Agregar Nueva Canción y Protección por Contraseña Admin
-const ADMIN_PASSWORD_HASH = 'MErcedario$2026';
-let esAdminAutenticado = sessionStorage.getItem('admin_cancionero_autenticado') === 'true';
+// Configuración de Envío de Sugerencias (Google Apps Script Webhook)
+const GOOGLE_SCRIPT_SUGERENCIAS_URL = 'https://script.google.com/macros/s/AKfycbx9H8YJftIfxtugcHONYMRnoUoV3-EFFB3yp5P-cnko6rpDQqOVeyXDEimXkDffbx_5/exec';
 
-function actualizarBotonAdminUI() {
-  const btn = document.getElementById('btn-admin-canto');
-  const icono = document.getElementById('icono-admin');
-
-  if (!btn || !icono) return;
-
-  if (esAdminAutenticado) {
-    btn.className = 'p-2 rounded-lg bg-gold-600 hover:bg-gold-500 text-merced-950 transition shadow-sm';
-    btn.title = 'Sesión Admin Activa: Cargar nuevo canto';
-    icono.setAttribute('data-lucide', 'unlock');
-  } else {
-    btn.className = 'p-2 rounded-lg bg-merced-800/80 hover:bg-merced-700 text-gold-400 hover:text-white transition border border-merced-700';
-    btn.title = 'Acceso Administrador';
-    icono.setAttribute('data-lucide', 'lock');
-  }
-  lucide.createIcons();
-}
-
-function solicitarAccesoAdmin() {
-  if (esAdminAutenticado) {
-    abrirModalNuevaCancion();
-  } else {
-    abrirModalLoginAdmin();
-  }
-}
-
-function abrirModalLoginAdmin() {
-  const modal = document.getElementById('modal-login-admin');
-  const input = document.getElementById('input-admin-pass');
-  const error = document.getElementById('error-admin-pass');
-  if (error) error.classList.add('hidden');
-  if (input) input.value = '';
-  if (modal) modal.classList.remove('hidden');
-  setTimeout(() => input?.focus(), 100);
-}
-
-function cerrarModalLoginAdmin() {
-  const modal = document.getElementById('modal-login-admin');
-  if (modal) modal.classList.add('hidden');
-}
-
-function toggleVerPasswordAdmin() {
-  const input = document.getElementById('input-admin-pass');
-  const icono = document.getElementById('icono-ojo-admin');
-  if (!input || !icono) return;
-  if (input.type === 'password') {
-    input.type = 'text';
-    icono.setAttribute('data-lucide', 'eye-off');
-  } else {
-    input.type = 'password';
-    icono.setAttribute('data-lucide', 'eye');
-  }
-  lucide.createIcons();
-}
-
-function validarPasswordAdmin(e) {
-  e.preventDefault();
-  const input = document.getElementById('input-admin-pass');
-  const error = document.getElementById('error-admin-pass');
-  const pass = input ? input.value.trim() : '';
-
-  if (pass === ADMIN_PASSWORD_HASH) {
-    esAdminAutenticado = true;
-    sessionStorage.setItem('admin_cancionero_autenticado', 'true');
-    cerrarModalLoginAdmin();
-    actualizarBotonAdminUI();
-    mostrarToast('Sesión de Administrador iniciada');
-    abrirModalNuevaCancion();
-  } else {
-    if (error) error.classList.remove('hidden');
-    input?.select();
-  }
-}
-
+// Modal Agregar Nueva Canción
 function abrirModalNuevaCancion() {
-  if (!esAdminAutenticado) {
-    abrirModalLoginAdmin();
-    return;
-  }
-  document.getElementById('modal-nueva-cancion').classList.remove('hidden');
+  document.getElementById('modal-nueva-cancion')?.classList.remove('hidden');
   actualizarCodigoSugerido();
 }
 
 function cerrarModalNuevaCancion() {
-  document.getElementById('modal-nueva-cancion').classList.add('hidden');
+  document.getElementById('modal-nueva-cancion')?.classList.add('hidden');
 }
 
 function poblarSelectNuevaSeccion() {
@@ -725,9 +647,9 @@ function renderizarCuerpoIndiceGeneral(filtro = '') {
   secciones.forEach(sec => {
     // Filtrar cantos de esta sección
     let cantosSec = todasLasCanciones.filter(c => c.seccion_codigo === sec.codigo);
-    
+
     if (termino) {
-      cantosSec = cantosSec.filter(c => 
+      cantosSec = cantosSec.filter(c =>
         c.codigo.toLowerCase().includes(termino) ||
         c.titulo.toLowerCase().includes(termino) ||
         sec.nombre.toLowerCase().includes(termino)
@@ -830,7 +752,7 @@ function sugerirCorreccionCancionActual() {
   poblarSelectSugerirSeccion();
   document.getElementById('sugerir-tipo').value = 'correccion';
   adaptarFormularioSugerencia();
-  
+
   document.getElementById('sugerir-referencia').value = `[${cancionActualModal.codigo}] ${cancionActualModal.titulo}`;
   document.getElementById('sugerir-titulo').value = cancionActualModal.titulo;
   document.getElementById('sugerir-mensaje').value = `Corrección sugerida para la letra:\n\n${cancionActualModal.letra}\n\nDetalle de la modificación: `;
