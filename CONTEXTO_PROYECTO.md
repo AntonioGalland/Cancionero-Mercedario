@@ -81,11 +81,29 @@ Permite buscar por:
   1. Nuevos cantos.
   2. Correcciones de letras/estrofas.
   3. Bajas o retiros de cantos en desuso.
+* **Integración real con Google Apps Script:** Al enviar, el formulario hace un `fetch` silencioso (sin salir de la página, con `mode: 'no-cors'`) al webhook de Google Apps Script, que:
+  - Registra la sugerencia en la **Google Sheet "Sugerencias Cancionero Mercedario"** (cuenta `antonio.galland@gmail.com`).
+  - Envía un **correo de aviso automático** al administrador.
+* **URL del webhook:** `https://script.google.com/macros/s/AKfycbx9H8YJftIfxtugcHONYMRnoUoV3-EFFB3yp5P-cnko6rpDQqOVeyXDEimXkDffbx_5/exec`
+* **Google Sheet de sugerencias:** `https://docs.google.com/spreadsheets/d/1osRLgdYVMREM_Q_v5mWmrtAuwYGpa9mC5j5UcsBJNvk/`
+* **Respaldo local:** Cada sugerencia también se guarda en `localStorage` bajo la clave `buzon_sugerencias_mercedario` por si falla la red.
 
-### F. Panel de Administración
-* Acceso mediante el botón con ícono de candado en la barra superior.
-* **Contraseña oficial de Administrador:** `MErcedario$2026` (con botón de ojito para verificar caracteres y limpieza automática de espacios accidentales).
-* Al desbloquearse, habilita la carga manual directa de cantos nuevos con numeración correlativa automática.
+### F. Flujo de Aprobación de Sugerencias (Manual)
+El proceso de aprobación de cantos sugeridos es deliberadamente manual, porque el administrador es quien tiene la potestad pastoral de decidir qué entra al cancionero.
+
+**Para aprobar un canto nuevo sugerido:**
+1. Revisar la sugerencia en la Google Sheet.
+2. Abrir el archivo `canciones_data.js` en el editor.
+3. Agregar el objeto del canto en la sección correspondiente con el formato:
+   ```js
+   { "id": "...", "codigo": "ENT-XX", "titulo": "...", "seccion": "...", "seccion_codigo": "ENT", "letra": "..." }
+   ```
+4. Guardar y hacer `git push` → Vercel despliega en ~15 segundos.
+
+### G. Panel de Administración
+* El botón de candado y el modal de contraseña fueron **eliminados de la interfaz** para simplificarla (noviembre 2026).
+* La carga directa de cantos (`modal-nueva-cancion`) sigue disponible en el HTML pero ya no es accesible desde la barra de navegación; se usa directamente desde el código si es necesario.
+* La aprobación de sugerencias se realiza editando `canciones_data.js` y haciendo push a GitHub.
 
 ---
 
@@ -105,4 +123,20 @@ Permite buscar por:
 1. Incorporación progresiva de acordes para guitarra (cifrado) en canciones litúrgicas clave.
 2. Inclusión de enlaces a audios oficiales en YouTube o Spotify para coros juveniles.
 3. Posibilidad de descargar el programa de misa en formato PDF listo para imprimir.
+
+---
+
+## 8. Estado del Proyecto (actualizado octubre/noviembre 2026)
+
+| Funcionalidad | Estado |
+|---|---|
+| Catálogo de 530+ cantos con buscador | ✅ Funcionando |
+| PWA instalable offline | ✅ Funcionando |
+| Repertorio de Misa + exportar a WhatsApp | ✅ Funcionando |
+| Índice General por secciones litúrgicas | ✅ Funcionando |
+| Temas Claro / Oscuro / Sepia | ✅ Funcionando |
+| Formulario "Sugerir Canto" con envío a Google Sheet | ✅ Funcionando |
+| Aviso por correo al administrador vía Apps Script | ✅ Activo |
+| Galería de templos mercedarios | ✅ Funcionando |
+| Aprobación y publicación de cantos sugeridos | 🔧 Manual (editar canciones_data.js + git push) |
 
