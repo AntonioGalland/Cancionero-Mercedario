@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarCarruselHero();
   inicializarEventos();
   cargarRepertorioLocal();
-  actualizarBotonAdminUI();
 });
 
 // Cargar datos desde window.CANCIONERO_DATA o localStorage
@@ -811,26 +810,49 @@ function enviarSugerenciaComunidad(e) {
   const seccion = document.getElementById('sugerir-seccion').value;
 
   const nuevaSugerencia = {
-    id: Date.now(),
-    fecha: new Date().toLocaleString(),
+    fecha: new Date().toLocaleString('es-AR'),
     tipo: tipo,
     titulo: titulo,
     referencia: ref,
     seccion: seccion,
     mensaje: mensaje,
     remitente: autor,
-    comunidad: comunidad,
-    estado: 'pendiente'
+    comunidad: comunidad
   };
 
-  // Guardar en buzón de sugerencias local
+  // Guardar copia local como respaldo
   const buzon = JSON.parse(localStorage.getItem('buzon_sugerencias_mercedario') || '[]');
-  buzon.push(nuevaSugerencia);
+  buzon.push({ ...nuevaSugerencia, id: Date.now(), estado: 'enviada' });
   localStorage.setItem('buzon_sugerencias_mercedario', JSON.stringify(buzon));
 
-  // También preparar texto para WhatsApp o email al administrador
-  cerrarModalSugerir();
-  mostrarToast('¡Muchas gracias! Tu sugerencia fue enviada al Administrador.');
+  // Enviar al Google Apps Script (silencioso, sin salir de la página)
+  const btnEnviar = document.querySelector('#form-sugerir button[type="submit"]');
+  if (btnEnviar) {
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = 'Enviando...';
+  }
+
+  fetch(GOOGLE_SCRIPT_SUGERENCIAS_URL, {
+    method: 'POST',
+    mode: 'no-cors', // necesario para Google Apps Script desde el browser
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(nuevaSugerencia)
+  })
+  .then(() => {
+    cerrarModalSugerir();
+    mostrarToast('🎵 ¡Muchas gracias! Tu sugerencia fue enviada al Administrador.');
+  })
+  .catch(() => {
+    // Aunque falle la red, la copia local ya fue guardada
+    cerrarModalSugerir();
+    mostrarToast('🎵 Sugerencia guardada. Se enviará cuando haya conexión.');
+  })
+  .finally(() => {
+    if (btnEnviar) {
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = 'Enviar Propuesta';
+    }
+  });
 }
 
 // Eventos de teclado y scroll
