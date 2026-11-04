@@ -1281,6 +1281,17 @@ window.CANCIONERO_DATA = {
       "letra": "Señor, Tú me conoces, \nentiendes desde lejos mi pensar, \nadviertes mi andar y mi reposo, \nconoces todos mis caminos. \n\nPues aún no está la palabra en mi voz \ny Tú la sabes. \nDelante y detrás tú me rodeaste, \npusiste sobre mí tu amor, \nGrande eres, y no lo puedo comprender. \n\n¿A dónde me iré de tu Espíritu, \na dónde huiré de tu presencia? \n\nPorque si fuera a los cielos te hallaré \ny si tomara las alas del alba te encontraré \naunque habitara en el extremo del mar \ntu mano me guiará, conmigo estarás. \ntu mano me guiará, conmigo estarás."
     },
     {
+          "id": "sal-28-tu-palabra-senor-es-la-verdad-salmo-18-b",
+          "codigo": "SAL-28",
+          "numero_seccion": 28,
+          "titulo": "TU PALABRA, SEÑOR, ES LA VERDAD (Salmo 18 b)",
+          "titulo_original": "TU PALABRA, SEÑOR, ES LA VERDAD (Salmo 18 b)",
+          "seccion": "Salmos",
+          "seccion_codigo": "SAL",
+          "letra": "Tu Palabra, Señor, es la verdad\ny la luz de mis ojos.\n\nLa ley del Señor es perfecta,\nreconforta el alma;\nel testimonio del Señor es verdadero,\nsabiduría del humilde.\n\n\nLos preceptos del Señor son justos,\nalegran el corazón;\nla Palabra del Señor es pura,\nilumina los ojos.\n\nLos mandamientos del Señor son santos,\npermanecen para siempre;\nlos juicios del Señor son la verdad,\ny siempre justos.\n\nSu Palabra es más valiosa\nque el oro más fino;\nsus preceptos son más dulces que la miel\nque fluye del panal.",
+          "es_nueva": true
+    },
+    {
       "id": "ofe-01-a-buen-tiempo",
       "codigo": "OFE-01",
       "numero_seccion": 1,
