@@ -309,6 +309,9 @@ function abrirModalCancion(codigo) {
   // Actualizar botón de repertorio
   actualizarBotonModalRepertorio();
 
+  // Si el drawer de repertorio está abierto (especialmente en móvil), cerrarlo para ver la canción directamente
+  cerrarRepertorioDrawer();
+
   document.getElementById('modal-cancion').classList.remove('hidden');
   document.body.classList.add('overflow-hidden');
   lucide.createIcons();
@@ -394,7 +397,14 @@ function actualizarBotonModalRepertorio() {
 
 function toggleRepertorioDrawer() {
   const drawer = document.getElementById('drawer-repertorio');
-  drawer.classList.toggle('translate-x-full');
+  if (drawer) drawer.classList.toggle('translate-x-full');
+}
+
+function cerrarRepertorioDrawer() {
+  const drawer = document.getElementById('drawer-repertorio');
+  if (drawer && !drawer.classList.contains('translate-x-full')) {
+    drawer.classList.add('translate-x-full');
+  }
 }
 
 function actualizarUIRepertorio() {
