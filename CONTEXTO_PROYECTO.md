@@ -126,6 +126,30 @@ El proceso de aprobación de cantos sugeridos es deliberadamente manual, porque 
 
 ---
 
+## 7b. Sección "Vida de la Familia Mercedaria"
+
+Se incorporó (noviembre 2026) una nueva sección visual ubicada **entre la galería y el footer**, pensada para enlazar noticias, encuentros y eventos de la Familia Mercedaria Argentina.
+
+### Estructura
+* Es un `<section>` con un título "Vida de la Familia Mercedaria" y un contenedor flexible de **cards clickeables**.
+* Cada card es un `<a>` con diseño hover animado, ícono Lucide, etiqueta de categoría, título, descripción y texto "Ver en merced.org.ar".
+* Responsive: en móvil se apilan, en pantallas `sm` y mayores van en fila.
+
+### Cards actuales
+| Título | URL | Categoría |
+|:---|:---|:---|
+| Encuentro de la FML en Tucumán | https://merced.org.ar/encuentro-de-la-fml-en-tucuman/ | Fraternidad Laical Mercedaria |
+
+### Cómo agregar más cards
+Dentro del `div class="flex flex-col sm:flex-row gap-4"` de la sección, duplicar el bloque `<a class="group flex items-start...">` y cambiar:
+1. `href` → URL del nuevo evento/noticia.
+2. El texto de categoría, título y descripción.
+3. El ícono `data-lucide` si corresponde (ej.: `calendar`, `book-open`, `music`).
+
+Luego hacer `git push` → Vercel publica en ~15 segundos.
+
+---
+
 ## 8. Estado del Proyecto (actualizado octubre/noviembre 2026)
 
 | Funcionalidad | Estado |
@@ -138,5 +162,6 @@ El proceso de aprobación de cantos sugeridos es deliberadamente manual, porque 
 | Formulario "Sugerir Canto" con envío a Google Sheet | ✅ Funcionando |
 | Aviso por correo al administrador vía Apps Script | ✅ Activo |
 | Galería de templos mercedarios | ✅ Funcionando |
+| Sección "Vida de la Familia Mercedaria" (cards de eventos/noticias) | ✅ Funcionando |
 | Aprobación y publicación de cantos sugeridos | 🔧 Manual (editar canciones_data.js + git push) |
 
